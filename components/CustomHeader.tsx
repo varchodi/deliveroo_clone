@@ -5,6 +5,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import Colors from '../constants/Colors'
 import { Link } from 'expo-router'
+import BottomSheet from './BottomSheet'
+import {BottomSheetModal} from '@gorhom/bottom-sheet'
 
 // search bar component
 const SearchBar=()=> {
@@ -26,16 +28,26 @@ const SearchBar=()=> {
 }
 
 const CustomHeader = () => {
+    const bottomSheetRef = React.useRef<BottomSheetModal>(null);
+    //open modal function(to open bottomSheet)
+    const openModal = () => {
+        bottomSheetRef.current?.present();
+    }
   return (
       <SafeAreaView style={styles.safeArea}>
+          {/* !! ?? call bottomSheet */}
+          <BottomSheet ref={bottomSheetRef} />
           <View style={styles.container}>
             {/* ?? this view is a test */}
               <View style={{ flex: 1, flexDirection: 'row', gap:20}}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={openModal}>
                 <Image style={styles.bike} source={require('../assets/images/bike.png')} />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.titleContainer} >
+                <TouchableOpacity
+                      onPress={openModal}
+                      style={styles.titleContainer} >
+                      
                     <Text style={styles.title}>Delivery · Now</Text>
                     <View style={styles.locationName}>
                         <Text style={styles.subtitle}>San francisco, CA</Text>

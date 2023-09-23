@@ -1,5 +1,6 @@
 import CustomHeader from '../components/CustomHeader';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
@@ -22,11 +23,14 @@ export default function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{
-          header:()=><CustomHeader/>
-        }} />
-      </Stack>
+      {/* ?? to call these bottomsheets in any page or components */}
+      <BottomSheetModalProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{
+            header:()=><CustomHeader/>
+          }} />
+        </Stack>
+      </BottomSheetModalProvider>
     </ThemeProvider>
   );
 }
