@@ -29,6 +29,8 @@ export default function RootLayoutNav() {
           <Stack.Screen name="index" options={{
             header:()=><CustomHeader/>
           }} />
+          {/* add filter page to stack */}
+          <Stack.Screen name='(modal)/filter'/>
         </Stack>
       </BottomSheetModalProvider>
     </ThemeProvider>
