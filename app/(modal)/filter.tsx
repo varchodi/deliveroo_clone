@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, ListRenderItem } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, ListRenderItem, Animated } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '../../constants/Colors'
 import { useNavigation } from 'expo-router'
 // category data
 import categories from '../../assets/data/filter.json'
+import BouncyCheckbox from 'react-native-bouncy-checkbox'
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 interface Category{
     name: string,
     count: number,
@@ -46,11 +48,70 @@ const ItemBox = () => {
 
 const Filter = () => {
     const navigation = useNavigation();
+    const [items, setItems] = useState<Category[]>(categories);
+    const [selected, setSelected] = useState<Category[]>([]);
+    const flexWidth = useSharedValue(0);
+    const scale = useSharedValue(0);
+
+    useEffect(() => {
+        const hasSelected = selected.length > 0;
+        const selectedItems = items.filter((it) => it.checked);
+        const newSelected = selectedItems.length > 0;
+        
+        if (hasSelected !== newSelected) {
+            //?? with timing , to ass a same king of aspect 
+            flexWidth.value = withTiming(newSelected ? 150 : 0);
+            //?? hide and remove
+            scale.value =withTiming( newSelected ? 1 : 0);
+        };
+        setSelected(selectedItems);
+    },[items])
+    //?? clear checked items
+    const handleClearAll = () => {
+        const updateditems = items.map((item) => {
+            item.checked = false;
+            return item;
+        });
+        setItems(updateditems);
+    }
+
+    //?? animated styles
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+            width: flexWidth.value,
+            opacity: flexWidth.value > 0 ? 1 : 0,
+        }
+    });
+    const animatedText = useAnimatedStyle(() => {
+        return {
+            transform:[{scale:scale.value}],
+        }
+    });
     //?? render Item custom function
-    const renderItem: ListRenderItem<Category> = ({ item }) => {
+    const renderItem: ListRenderItem<Category> = ({ item,index }) => {
         return (
             <View style={styles.row}>
-                <Text>{item.name}</Text>
+                <Text
+                    style={styles.itemText}
+                >{item.name} ({item.count})</Text>
+                <BouncyCheckbox
+                    isChecked={items[index].checked}
+                    fillColor={Colors.primary}
+                    unfillColor="#fff"
+                    disableBuiltInState
+                    iconStyle={{ borderColor: Colors.primary, borderRadius: 4, }}
+                    innerIconStyle={{ borderColor: Colors.primary, borderRadius: 4 }}
+                    onPress={() => {
+                        const isChecked = items[index].checked;
+                        const updateditems = items.map((item) => {
+                            if (item.name == items[index].name) {
+                                item.checked = !isChecked;
+                            }
+                            return item;
+                        });
+                        setItems(updateditems);
+                    }}
+                />
             </View>
         )
     }
@@ -62,10 +123,21 @@ const Filter = () => {
               ListHeaderComponent={<ItemBox/>}
           />
           <View style={{ height:76}}></View>
-        <View style={styles.footer}>
-              <TouchableOpacity style={styles.fullBtn} onPress={navigation.goBack}>
-                  <Text style={styles.footerText}>Done</Text>
-              </TouchableOpacity>
+          <View style={styles.footer}>
+              <View style={styles.btnContainer}>
+                  {/* ?? styles of animated view style={[animatedStyles,styles.outlineBtn]} */}
+                <Animated.View style={[styles.outlineBtn]}> 
+                    <TouchableOpacity style={{}} onPress={handleClearAll}>
+                    {/* ?? this animated text be with styles style={[styles.outlineBtnText,animatedText]} */}
+                    <Animated.Text style={[styles.outlineBtnText]}>Clear All</Animated.Text>
+                    </TouchableOpacity>
+                </Animated.View>
+
+                <TouchableOpacity style={styles.fullBtn} onPress={navigation.goBack}>
+                    <Text style={styles.footerText}>Done</Text>
+                </TouchableOpacity>
+                  
+              </View>
         </View>
     </View>
   )
@@ -99,7 +171,9 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.primary,
         padding: 24,
         alignItems: 'center',
-        borderRadius:8,
+        borderRadius: 8,
+        flex: 1,
+        
     },
     footerText:{
         color: "#fff",
@@ -126,10 +200,31 @@ const styles = StyleSheet.create({
         borderColor: Colors.grey,
         borderBottomWidth:1,
     },
+    itemText: {
+        flex: 1,
+    },
     row: {
         flexDirection: 'row',
         alignItems:'center',
         justifyContent: 'space-between',
         padding: 10,
-    }
+    },
+    btnContainer:{
+        flexDirection: 'row',
+        gap: 12,
+        justifyContent:'center',
+    },
+    outlineBtn: {
+        borderColor: Colors.primary,
+        borderWidth: 0.5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 8,
+        paddingHorizontal:4,
+    },
+    outlineBtnText: {
+        color: Colors.primary,
+        fontWeight: 'bold',
+        fontSize:16,
+    },
 })
