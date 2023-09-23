@@ -1,3 +1,4 @@
+import CustomHeader from '../components/CustomHeader';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -22,7 +23,9 @@ export default function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="index" options={{}} />
+        <Stack.Screen name="index" options={{
+          header:()=><CustomHeader/>
+        }} />
       </Stack>
     </ThemeProvider>
   );
