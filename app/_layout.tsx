@@ -3,9 +3,11 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
+import { useColorScheme,View,TouchableOpacity,Text } from 'react-native';
+import Colors from '../constants/Colors';
 
 // export {
 //   // Catch any errors thrown by the Layout component.
@@ -20,7 +22,7 @@ export const unstable_settings = {
 
 export default function RootLayoutNav() {
   const colorScheme = useColorScheme();
-
+  const navigation = useNavigation();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {/* ?? to call these bottomsheets in any page or components */}
@@ -29,6 +31,25 @@ export default function RootLayoutNav() {
           <Stack.Screen name="index" options={{
             header:()=><CustomHeader/>
           }} />
+          {/* add filter page to stack */}
+          <Stack.Screen
+            options={{
+              presentation: "modal",
+              headerTitle: "Filter",
+              headerShadowVisible: false,
+              headerStyle: {
+                backgroundColor: Colors.lightGrey,
+              },
+              headerTitleAlign:'center',
+              //?? 
+              headerLeft: () => (
+                <TouchableOpacity onPress={navigation.goBack}>
+                  <Ionicons name='close-outline' size={28} color={Colors.medium} />
+                </TouchableOpacity>
+              ),
+              
+            }}
+            name='(modal)/filter' />
         </Stack>
       </BottomSheetModalProvider>
     </ThemeProvider>
