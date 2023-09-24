@@ -50,6 +50,21 @@ export default function RootLayoutNav() {
               
             }}
             name='(modal)/filter' />
+          {/* location search */}
+          <Stack.Screen
+            options={{
+              presentation: "fullScreenModal",
+              headerTitle: "Search Location",
+              headerTitleAlign:'center',
+              //?? 
+              headerLeft: () => (
+                <TouchableOpacity onPress={navigation.goBack}>
+                  <Ionicons name='close-outline' size={28} color={Colors.medium} />
+                </TouchableOpacity>
+              ),
+              
+            }}
+            name='(modal)/location-search' />
         </Stack>
       </BottomSheetModalProvider>
     </ThemeProvider>
