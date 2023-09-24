@@ -39,7 +39,7 @@ const BottomSheet =React.forwardRef<Ref>( (props,ref) => {
             <Text style={styles.subHeader}>Your location</Text>
             {/* link to location (not yet setted up) */}
               <Link href={'/(modal)/location-search'} asChild>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={()=>dismiss()}>
                       <View style={styles.item}>
                           <Ionicons name='locate-outline' size={20} color={Colors.medium}/>
                           <Text style={{ flex: 1}}>Current Location</Text>

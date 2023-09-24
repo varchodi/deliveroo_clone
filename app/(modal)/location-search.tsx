@@ -5,7 +5,7 @@ const LocationSearch
  = () => {
   return (
     <View>
-      <Text>LocationSearch
+      <Text>LocationSearch {process.env?.EXPO_PUBLIC_GOOGLE_API_KEY ?? "none"}
       </Text>
     </View>
   )
