@@ -54,7 +54,7 @@ export default function RootLayoutNav() {
           <Stack.Screen
             options={{
               presentation: "fullScreenModal",
-              headerTitle: "Search Location",
+              headerTitle: "Select Location",
               headerTitleAlign:'center',
               //?? 
               headerLeft: () => (
