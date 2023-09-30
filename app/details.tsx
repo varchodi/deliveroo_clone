@@ -1,19 +1,29 @@
-import { Image, StyleSheet, Text, View,TouchableOpacity,SectionList,ListRenderItem } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import { Image, StyleSheet, Text, View,TouchableOpacity,SectionList,ListRenderItem,ScrollView } from 'react-native'
+import React, { useLayoutEffect,useRef,useState } from 'react'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import Colors from '@/constants/Colors'
 import {restaurant} from '@/assets/data/restaurant'
 import { Link, useNavigation } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 
 const DetailsPage = () => {
     const navigation = useNavigation();
-    
-    const DATA = restaurant.food.map((item, index) => ({
-        title: item?.category,
-        data: item.meals,
-        index,
-    }))
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const opacity = useSharedValue(0);
+  const animatedStyles = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  const scrollRef = useRef<ScrollView>(null);
+  const itemsRef = useRef<TouchableOpacity[]>([]);
+
+  const DATA = restaurant.food.map((item, index) => ({
+    title: item.category,
+    data: item.meals,
+    index,
+  }));
         
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -45,6 +55,24 @@ const DetailsPage = () => {
         })
         console.log("Details")
     }, [])
+    
+    const selectCategory = (index: number) => {
+        const selected = itemsRef.current[index];
+        setActiveIndex(index);
+    
+        selected.measure((x) => {
+          scrollRef.current?.scrollTo({ x: x - 16, y: 0, animated: true });
+        });
+      };
+    
+      const onScroll = (event: any) => {
+        const y = event.nativeEvent.contentOffset.y;
+        if (y > 350) {
+          opacity.value = withTiming(1);
+        } else {
+          opacity.value = withTiming(0);
+        }
+    };
     
     const renderItem: ListRenderItem<any> = ({ item, index }) => (
         <Link href={{ pathname: '/', params: { id: item.id } }} asChild>
@@ -105,6 +133,29 @@ const DetailsPage = () => {
                   />
               </View>
           </ParallaxScrollView>
+
+          {/* sticky segment */}
+
+          <Animated.View style={[styles.stickySegments,animatedStyles]}>
+        <View style={styles.segmentsShadow}>
+                  <ScrollView
+                      ref={scrollRef}
+                      horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.segmentScrollview}>
+            {restaurant.food.map((item, index) => (
+              <TouchableOpacity
+                ref={(ref) => (itemsRef.current[index] = ref!)}
+                key={index}
+                style={activeIndex === index ? styles.segmentButtonActive : styles.segmentButton}
+                onPress={() => selectCategory(index)}
+                >
+                    <Text
+                        style={activeIndex === index ? styles.segmentTextActive : styles.segmentText}
+                    >{item.category}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </Animated.View>
           
     </>
   )
