@@ -59,8 +59,8 @@ const DetailsPage = () => {
     const selectCategory = (index: number) => {
         const selected = itemsRef.current[index];
         setActiveIndex(index);
-    
-        selected.measure((x) => {
+        //?? must be fixed ../.
+        selected.measure((x,y,width,height,pageX,pageY) => {
           scrollRef.current?.scrollTo({ x: x - 16, y: 0, animated: true });
         });
       };
@@ -89,6 +89,9 @@ const DetailsPage = () => {
   return (
     <>
           <ParallaxScrollView
+              //while scrolling
+              scrollEvent={onScroll}
+
               style={{ flex:1}}
               backgroundColor={'#fff'}
               parallaxHeaderHeight={250}
@@ -112,24 +115,14 @@ const DetailsPage = () => {
                 
                   {/* section list  */}
                   <SectionList
-                      contentContainerStyle={{paddingBottom:50}}
-                      keyExtractor={(item,index)=>`${item.name}+${index}`}
-                      scrollEnabled={false} sections={DATA}
-                    //   items
+                      contentContainerStyle={{ paddingBottom: 50 }}
+                      keyExtractor={(item, index) => `${item.id + index}`}
+                      scrollEnabled={false}
+                      sections={DATA}
                       renderItem={renderItem}
-                      //   items separator
-                      ItemSeparatorComponent={() => (
-                          <View style={{height:1,backgroundColor:Colors.grey}}></View>
-                      )}
-                      //section separetir
-                      SectionSeparatorComponent={() => (
-                        <View style={{height:1,backgroundColor:Colors.grey}}></View>
-                    )}
-                      //   section header
-                      renderSectionHeader={({ section: { title, index } }) => (
-                          <Text style={styles.sectionHeader
-                          }>{title}</Text>
-                      )}
+                      ItemSeparatorComponent={() => <View style={{ marginHorizontal: 16, height: 1, backgroundColor: Colors.grey }} />}
+                      SectionSeparatorComponent={() => <View style={{ height: 1, backgroundColor: Colors.grey }} />}
+                      renderSectionHeader={({ section: { title, index } }) => <Text style={styles.sectionHeader}>{title}</Text>}
                   />
               </View>
           </ParallaxScrollView>
