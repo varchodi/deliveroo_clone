@@ -7,8 +7,6 @@ import {
   ViewPropTypes,
 } from "react-native";
 
-const styles = require("./styles");
-
 import { bool, func, number, string } from "prop-types";
 
 const window = Dimensions.get("window");
